@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+import json
 
 global my_new_password
 
@@ -36,21 +37,24 @@ def save_password():
     temp_password = password_entry.get()
     temp_url = url_entry.get()
     temp_user = email_or_user_entry.get()
+    new_data = {temp_url:
+        {
+            "email": temp_user,
+            "password": temp_password
+        }
+    }
     if len(temp_password) == 0 or len(temp_user) == 0 or len(temp_url) == 0:
         messagebox.showerror(title="Error",
                              message=f"These fields should no be blank")
     else:
-        print(temp_password)
-        is_okay_to_save = messagebox.askokcancel(title=temp_url,
-                                                 message=f"{temp_url}\n{temp_user}\n{temp_password}\nSave to file ? ")
-        # print(my_new_password)
-        if is_okay_to_save:
-            with open("password_list.txt", 'a+') as file:
-                file.write(f"{temp_url} | {temp_user} | {temp_password}\n")
-                file.close()
-            password_entry.delete(0, 'end')
-            url_entry.delete(0, 'end')
-            email_or_user_entry.delete(0, 'end')
+        with open("data.json", 'r') as file:
+            #read from a json file
+            data = json.load(file)
+            data.update(new_data)
+
+        with open("data.json","w") as file:
+            # update data in json file
+            json.dump(data, file, indent=4)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
