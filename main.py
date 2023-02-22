@@ -80,8 +80,8 @@ def lookup_site():
     try:
         with open("data.json", "r") as file:
             data = json.load(file)
-    except:
-        error_message = messagebox.showinfo(title=url,
+    except FileNotFoundError:
+        error_message = messagebox.showinfo(title="Error",
                                             message=f"No Data File Found")
     else:
         find_url = url_entry.get()
