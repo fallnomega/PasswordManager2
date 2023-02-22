@@ -47,14 +47,57 @@ def save_password():
         messagebox.showerror(title="Error",
                              message=f"These fields should no be blank")
     else:
-        with open("data.json", 'r') as file:
-            #read from a json file
-            data = json.load(file)
-            data.update(new_data)
+        try:
+            testing = open("data.json", 'r')
+        except FileNotFoundError as error_message:
+            print("File not found, creating password file")
+            with open("data.json", "w") as file:
+                # update data in json file
+                json.dump(new_data, file, indent=4)
+                url_entry.delete(0, 'end')
+                email_or_user_entry.delete(0, 'end')
+                password_entry.delete(0, 'end')
+        else:
+            with open("data.json", 'r') as file:
+                # read from a json file
+                data = json.load(file)
+                data.update(new_data)
 
-        with open("data.json","w") as file:
-            # update data in json file
-            json.dump(data, file, indent=4)
+            with open("data.json", "w") as file:
+                # update data in json file
+                json.dump(data, file, indent=4)
+                url_entry.delete(0, 'end')
+                email_or_user_entry.delete(0, 'end')
+                password_entry.delete(0, 'end')
+        finally:
+            url_entry.delete(0, 'end')
+            email_or_user_entry.delete(0, 'end')
+            password_entry.delete(0, 'end')
+
+
+# ---------------------------- Search  ------------------------------- #
+def lookup_site():
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+    except:
+        error_message = messagebox.showinfo(title=url,
+                                            message=f"No Data File Found")
+    else:
+        find_url = url_entry.get()
+        print(find_url)
+        if find_url in data:
+            print(f"website: {find_url}")
+            # print(f"website: {find_url[0]['email']}")
+            print(data[find_url]['email'])
+            print(data[find_url]['password'])
+            result_message = messagebox.showinfo(title=find_url,
+                                                 message=f"URL: {find_url}\nUsername: {data[find_url]['email']}\nPassword: {data[find_url]['password']}")
+        else:
+            no_results = messagebox.showinfo(title=find_url,
+                                             message=f"No record exists.")
+
+    return
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -91,5 +134,8 @@ gen_pass.grid(row=3, column=2)
 
 add_pass = tk.Button(text="Add", width=36, command=save_password)
 add_pass.grid(row=4, column=1, columnspan=2)
+
+search_button = tk.Button(text="Search", command=lookup_site)
+search_button.grid(row=1, column=3)
 
 window.mainloop()
